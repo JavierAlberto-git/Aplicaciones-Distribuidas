@@ -159,14 +159,14 @@ app.post("/convertir-temperatura", (req, res) => {
 /* ========================= */
 /* 6️⃣ BUSCAR EN ARRAY */
 /* ========================= */
-
 app.post("/buscar", (req, res) => {
     const { array, elemento } = req.body;
     const indice = array.indexOf(elemento);
 
     res.json({
         encontrado: indice !== -1,
-        indice
+        indice: indice,
+        tipoElemento: typeof elemento
     });
 });
 

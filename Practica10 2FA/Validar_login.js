@@ -1,6 +1,3 @@
-// =====================
-// CONFIG DNS (opcional)
-// =====================
 require("node:dns/promises").setServers(["1.1.1.1", "8.8.8.8"]);
 
 const express = require("express");
@@ -17,7 +14,7 @@ let database;
 let collection;
 
 // =====================
-// FUNCIÓN HASH SHA-256
+// HASH SHA-256
 // =====================
 function hashSHA256(password) {
   return crypto
@@ -27,7 +24,7 @@ function hashSHA256(password) {
 }
 
 // =====================
-// CONEXIÓN A MONGO
+// CONEXIÓN
 // =====================
 async function connectDB() {
   const uri = "mongodb+srv://javieralberto1728_db_user:BJYhlzhfxlVfT3tF@cluster0.5qnxasc.mongodb.net/?appName=Cluster0";
@@ -39,11 +36,11 @@ async function connectDB() {
 }
 
 // =====================
-// PREPARAR BD Y COLECCIÓN
+// BD Y COLECCIÓN
 // =====================
 function prepareDB() {
   const dbName = "2FA";
-  const collectionName = "usuarios";
+  const collectionName = "Users"; // 👈 corregido
 
   database = client.db(dbName);
   collection = database.collection(collectionName);
@@ -60,13 +57,14 @@ app.get("/usuarios", (req, res) => {
 });
 
 // =====================
-// VALIDAR LOGIN
+// LOGIN (USERNAME O EMAIL)
 // =====================
 app.post("/usuarios/validar_login", async (req, res) => {
 
-  const { username, password } = req.body;
+  const { identifier, password } = req.body;
+  // identifier puede ser username o email
 
-  if (!username || !password) {
+  if (!identifier || !password) {
     return res.status(400).json({
       error: "Faltan credenciales"
     });
@@ -74,27 +72,38 @@ app.post("/usuarios/validar_login", async (req, res) => {
 
   try {
 
-    // 🔐 Hash de la contraseña recibida
     const hashedPassword = hashSHA256(password);
 
-    // 🔍 Buscar usuario
+    // 🔍 Buscar por username o email
     const user = await collection.findOne({
-      username: username,
-      password: hashedPassword
+      $or: [
+        { username: identifier },
+        { email: identifier }
+      ]
     });
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Credenciales inválidas"
+        message: "Usuario no existe"
       });
     }
 
+    // 🔐 Validar password
+    if (user.password !== hashedPassword) {
+      return res.status(401).json({
+        success: false,
+        message: "Password incorrecto"
+      });
+    }
+
+    // ✅ Login correcto
     res.json({
       success: true,
       message: "Login correcto",
       user: {
-        username: user.username
+        username: user.username,
+        email: user.email
       }
     });
 

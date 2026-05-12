@@ -1,8 +1,8 @@
 // src/Saludo.jsx
-function Saludo(props) {
+function Saludo({nombre,tipo}) {
   return (
     <div style={{ padding: '20px', borderRadius: '8px' }}>
-      <h2>¡Buenos días {props.nombre}!</h2>
+      <h2>¡Buenos {tipo} {nombre}!</h2>
       <p>Bienvenido a la sesión de hoy de Aplicaciones Distribuidas.</p>
     </div>
   );

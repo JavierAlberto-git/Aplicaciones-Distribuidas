@@ -1,4 +1,6 @@
 import Saludo from './Saludo.jsx'
+// Importamos tu nuevo componente de contador
+import Contador from './Contador.jsx' 
 
 function App() {
   return (
@@ -6,11 +8,13 @@ function App() {
       <h1>Hola mundo esto es una prueba</h1>
       <h2>Mendoza Sánchez Javier Alberto</h2>
       <p>2022640167</p>
+      
+      
       <Saludo nombre='Noe Sierra' tipo='Noches'/>
+  
+      <Contador />
     </div>
   )
 }
-
-
 
 export default App
